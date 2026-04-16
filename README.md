@@ -247,6 +247,8 @@ A interface em `Streamlit` foi criada para mostrar o projeto de forma mais intui
 - a resposta grounded;
 - os `top hits` com timestamps e score.
 
+![Demo da interface de video RAG](assets/rag_video.jpg)
+
 ## Resultado atual
 
 - `dataset_source = youcook2_style_local_video_sample`
