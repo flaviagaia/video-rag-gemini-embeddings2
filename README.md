@@ -141,6 +141,9 @@ flowchart LR
 - [app.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/app.py)  
   API simples para handoff com engenharia e integracao com backend.
 
+- [streamlit_app.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/streamlit_app.py)  
+  Interface de demo para perguntas, resposta grounded e visualizacao dos trechos com timestamps.
+
 - [src/sample_data.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/src/sample_data.py)  
   Gera o corpus local `YouCook2-style` com segmentos instrucionais.
 
@@ -223,10 +226,26 @@ Para rodar a API:
 uvicorn app:app --reload
 ```
 
+Para abrir a interface de demo:
+
+```bash
+streamlit run streamlit_app.py
+```
+
 ## Endpoints
 
 - `GET /health`
 - `POST /search`
+
+## Interface de demo
+
+A interface em `Streamlit` foi criada para mostrar o projeto de forma mais intuitiva em entrevista ou portfolio. Ela exibe:
+
+- a pergunta enviada;
+- o melhor trecho recuperado;
+- o intervalo de tempo do video;
+- a resposta grounded;
+- os `top hits` com timestamps e score.
 
 ## Resultado atual
 
