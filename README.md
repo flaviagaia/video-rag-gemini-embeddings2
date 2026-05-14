@@ -14,83 +14,9 @@ Em videos instrucionais, essa pergunta importa muito. O usuario raramente quer "
 
 Esse e exatamente o tipo de problema em que um pipeline de **video RAG** faz sentido.
 
-## Storytelling basico
 
-Imagine um catalogo de videos de receita, manutencao, treinamento ou onboarding. Se voce indexar cada video como se fosse um unico documento, a busca fica ruim porque:
 
-- o video e longo demais;
-- diferentes etapas ficam misturadas no mesmo item;
-- a resposta nao consegue apontar o momento exato;
-- o usuario recebe contexto demais e precisao de menos.
 
-Entao a ideia deste projeto e simples:
-
-1. quebrar o video em **trechos temporais significativos**;
-2. tratar cada trecho como uma unidade de retrieval;
-3. responder com **o passo certo e o intervalo certo**.
-
-## Storytelling intermediario
-
-O projeto foi inspirado no **YouCook2**, um dataset muito conhecido de videos instrucionais. Ele e especialmente bom para esse caso porque o conteudo naturalmente se organiza em:
-
-- etapas;
-- acoes;
-- segmentos temporais;
-- descricoes alinhadas ao que acontece no video.
-
-Em vez de representar o video inteiro como um item so, este repositório modela cada trecho com:
-
-- `video_id`
-- `segment_id`
-- `step_id`
-- `start_time`
-- `end_time`
-- `instruction_text`
-- `visual_description`
-
-Esse desenho aproxima o pipeline de como um produto real de video search, learning assistant ou help assistant precisaria funcionar.
-
-## Storytelling avancado
-
-O principal trade-off arquitetural aqui e o seguinte:
-
-- **indexar o video inteiro** e mais simples, mas perde granularidade;
-- **indexar por trecho** aumenta o trabalho de ingestao, mas melhora muito a recuperacao e a explicabilidade.
-
-Este projeto escolhe a segunda abordagem porque ela suporta melhor:
-
-- grounding com timestamp;
-- retrieval de passos;
-- resposta com citacao objetiva;
-- experiencia melhor para copilotos e assistentes.
-
-Em um sistema de producao, esse desenho tambem favorece:
-
-- reranking por trecho;
-- montagem de playlists por resposta;
-- highlight do momento exato no player;
-- analytics sobre quais segmentos sao mais recuperados.
-
-## Storytelling extremamente tecnico
-
-O ponto central e que **video RAG** nao depende apenas do texto da pergunta, mas da forma como o video e discretizado em unidades semanticamente utilizaveis.
-
-Aqui, cada trecho funciona como um **document chunk temporal**. Esse chunk agrega:
-
-- referencia de origem (`video_id`);
-- posicao no fluxo (`step_id`);
-- localizacao temporal (`start_time`, `end_time`);
-- semantica textual do passo (`instruction_text`);
-- contexto descritivo mais visual (`visual_description`).
-
-Com isso, o pipeline cria um indice no qual a unidade recuperavel nao e "o video", mas sim "o momento do video".
-
-Isso e importante porque a qualidade de um sistema de retrieval em video depende fortemente de:
-
-- granularidade do chunk;
-- cobertura semantica do texto associado ao trecho;
-- capacidade do embedding de capturar equivalencia de linguagem;
-- capacidade de apontar uma evidência concreta no output final.
 
 ## O que o projeto faz
 
@@ -135,29 +61,29 @@ flowchart LR
 
 ## Estrutura do repositorio
 
-- [main.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/main.py)  
+- [main.py](main.py)  
   Entry point local para executar o pipeline ponta a ponta.
 
-- [app.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/app.py)  
+- [app.py](app.py)  
   API simples para handoff com engenharia e integracao com backend.
 
-- [streamlit_app.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/streamlit_app.py)  
+- [streamlit_app.py](streamlit_app.py)  
   Interface de demo para perguntas, resposta grounded e visualizacao dos trechos com timestamps.
 
-- [src/sample_data.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/src/sample_data.py)  
+- [src/sample_data.py](src/sample_data.py)  
   Gera o corpus local `YouCook2-style` com segmentos instrucionais.
 
-- [src/retrieval.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/src/retrieval.py)  
+- [src/retrieval.py](src/retrieval.py)  
   Implementa a engine de retrieval com dois runtimes:
   `gemini_embedding_2` e `local_tfidf_fallback`.
 
-- [src/generation.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/src/generation.py)  
+- [src/generation.py](src/generation.py)  
   Constrói a resposta final grounded com timestamps e citacoes.
 
-- [src/pipeline.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/src/pipeline.py)  
+- [src/pipeline.py](src/pipeline.py)  
   Orquestra dataset, retrieval, grounding e artefato final.
 
-- [tests/test_project.py](/Users/flaviagaia/Documents/CV_FLAVIA_CODEX/video-rag-gemini-embeddings2/tests/test_project.py)  
+- [tests/test_project.py](tests/test_project.py)  
   Garante o contrato minimo do pipeline e valida o trecho esperado para consulta de molho/alho/manteiga.
 
 ## Modelo de dados do chunk temporal
@@ -239,7 +165,7 @@ streamlit run streamlit_app.py
 
 ## Interface de demo
 
-A interface em `Streamlit` foi criada para mostrar o projeto de forma mais intuitiva em entrevista ou portfolio. Ela exibe:
+A interface em `Streamlit` foi criada para mostrar o projeto de forma mais intuitiva em demonstrações e uso de portfólio. Ela exibe:
 
 - a pergunta enviada;
 - o melhor trecho recuperado;
@@ -296,11 +222,6 @@ Quanto mais o item recuperado representa "um momento" e nao "um video inteiro", 
 - explicar a resposta;
 - auditar o resultado.
 
-## Como defender esse projeto em entrevista
-
-Uma forma forte de explicar esse trabalho e:
-
-"Eu modelei um RAG para videos instrucionais em que a unidade de retrieval nao e o video inteiro, mas sim um trecho temporal com metadata de passo, texto instrucional e descricao visual. A rota principal foi desenhada para Gemini Embedding 2, e eu mantive um fallback local para garantir reprodutibilidade e teste automatizado. O output final devolve o trecho com grounding temporal e citacoes."
 
 ## Evolucoes naturais
 
